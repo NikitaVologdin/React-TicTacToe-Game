@@ -94,11 +94,28 @@ function PitchTile({ index, makeMove, mark }: PitchTileProps) {
   const currentPlayerIcon =
     currentPlayer === "x" ? xPlayerOutlinedIcon : oPlayerOutlinedIcon
 
+  const winningBackground = getWinningBackground(roundResult.winnerMark)
+
+  function getWinningBackground(mark: TMark | undefined) {
+    if (mark === undefined) {
+      return ""
+    }
+    if (mark === "x") {
+      return "pitch__tile_x-winner"
+    }
+    if (mark === "o") {
+      return "pitch__tile_o-winner"
+    }
+  }
+
   const location = map[index].location
 
+  const backgroundClass = roundResult.winningCombination.includes(index)
+    ? winningBackground
+    : ""
   return (
     <button
-      className="pitch__tile"
+      className={`pitch__tile ${backgroundClass}`}
       onClick={() => {
         makeMove(index)
       }}
@@ -119,7 +136,7 @@ function PitchTile({ index, makeMove, mark }: PitchTileProps) {
 export default function Pitch({ map, makeMove }: PitchProps) {
   return (
     <div className="game__pitch pitch">
-      {map.map((item, index) => {
+      {map.map(item => {
         return (
           <PitchTile
             index={item.index}
