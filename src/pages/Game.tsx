@@ -32,6 +32,8 @@ import { type IMap } from "../Types/mapTypes"
 import { type TMark } from "../Types/configTypes"
 import Pitch from "../components/Pitch"
 import Score from "../components/Score"
+import checkIsWinner from "../utils/checkIsWinner"
+import createNewMap from "../utils/createNewMap"
 
 export default function Game() {
   const [takenMoves, setTakenMoves] = useState(0)
@@ -53,6 +55,12 @@ export default function Game() {
   const secondPlayerWon = useRef(0)
   const ties = useRef(0)
 
+  interface IPlayersMoves {
+    x: number[]
+    o: number[]
+  }
+  const { current: playersMoves } = useRef<IPlayersMoves>({ x: [], o: [] })
+
   const nextPlayer = useCallback(
     function () {
       const nextPlayer = currentPlayer === "x" ? "o" : "x"
@@ -63,91 +71,16 @@ export default function Game() {
 
   const makeMove = useCallback(
     function (index: number) {
-      function createNewMap(map: IMap, index: number) {
-        const newMap = structuredClone(map)
-        const tileData = newMap[index]
-        tileData.mark = currentPlayer
-        tileData.disabled = true
-        return newMap
-      }
-
-      function checkIsWinner<T>(currentPlayer: T, map: IMap) {
-        const winningCombinations = [
-          [0, 1, 2],
-          [3, 4, 5],
-          [6, 7, 8],
-          [0, 3, 6],
-          [1, 4, 7],
-          [2, 5, 8],
-          [0, 4, 8],
-          [2, 4, 6],
-        ]
-        function getAllTiles<T>(mark: T, map: IMap) {
-          const filteredMap = map.filter(tile => {
-            return tile.mark === mark
-          })
-          const tilesIndexes = filteredMap.map(tileData => tileData.index)
-          return tilesIndexes
-        }
-
-        function isWinningCombination<T>(
-          tilesWithMark: number[],
-          combinations: Array<number[]>,
-          mark: T,
-        ) {
-          function checkCombination<T>(
-            combination: number[],
-            tilesWithMark: number[],
-            mark: T,
-          ) {
-            for (let i = 0; i < tilesWithMark.length; i++) {
-              const first = tilesWithMark[0 + i]
-              const second = tilesWithMark[1 + i]
-              const third = tilesWithMark[2 + i]
-
-              if (third === undefined) {
-                break
-              }
-
-              if (
-                combination[0] === first &&
-                combination[1] === second &&
-                combination[2] === third
-              ) {
-                return { mark, winningCombination: [first, second, third] }
-              }
-            }
-          }
-          for (let combination of combinations) {
-            const result = checkCombination(combination, tilesWithMark, mark)
-            if (result?.winningCombination) {
-              return result
-            }
-          }
-        }
-        const tilesWithMark = getAllTiles(currentPlayer, map)
-        console.log(tilesWithMark)
-        if (tilesWithMark.length < 3) return
-
-        const winner = isWinningCombination(
-          tilesWithMark,
-          winningCombinations,
-          currentPlayer,
-        )
-        if (winner?.winningCombination) {
-          return winner
-        } else {
-          return false
-        }
-      }
-
       const clickedTile = map[index]
       if (clickedTile.disabled) return
 
-      const newMap = createNewMap(map, index)
-      const winner = checkIsWinner<TMark>(currentPlayer, newMap)
+      playersMoves[currentPlayer].push(index)
+
+      const newMap = createNewMap(map, index, currentPlayer)
+
+      const winner = checkIsWinner(currentPlayer, playersMoves)
       if (winner) {
-        return dispatch(
+        dispatch(
           setRoundResult({
             winnerMark: winner.mark,
             isTie: false,
@@ -297,6 +230,8 @@ export default function Game() {
         winningCombination: [],
       }),
     )
+    playersMoves.x = []
+    playersMoves.o = []
   }
 
   function showRestartMessageHandler() {
