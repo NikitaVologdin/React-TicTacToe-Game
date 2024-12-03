@@ -126,6 +126,7 @@ export default function Game() {
           }
         }
         const tilesWithMark = getAllTiles(currentPlayer, map)
+        console.log(tilesWithMark)
         if (tilesWithMark.length < 3) return
 
         const winner = isWinningCombination(
@@ -145,9 +146,8 @@ export default function Game() {
 
       const newMap = createNewMap(map, index)
       const winner = checkIsWinner<TMark>(currentPlayer, newMap)
-
       if (winner) {
-        dispatch(
+        return dispatch(
           setRoundResult({
             winnerMark: winner.mark,
             isTie: false,
@@ -227,7 +227,6 @@ export default function Game() {
   }, [startNewGame, dispatch])
 
   useEffect(() => {
-    // if (isEndRoundMessageShown) return
     if (roundResult.winnerMark || roundResult.isTie) return
     if (map.length && roundResult.winnerMark === undefined) {
       const isAvailableMove = checkAvailableMoves()
