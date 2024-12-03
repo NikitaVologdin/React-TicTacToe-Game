@@ -1,6 +1,6 @@
 import { IMap } from "../Types/mapTypes"
 
-export function checkIsWinner<T>(currentPlayer: T, map: IMap) {
+export default function checkIsWinner<T>(currentPlayer: T, map: IMap) {
   const winningCombinations = [
     [0, 1, 2],
     [3, 4, 5],
@@ -11,6 +11,7 @@ export function checkIsWinner<T>(currentPlayer: T, map: IMap) {
     [0, 4, 8],
     [2, 4, 6],
   ]
+
   function getAllTiles<T>(mark: T, map: IMap) {
     const filteredMap = map.filter(tile => {
       return tile.mark === mark
@@ -54,8 +55,8 @@ export function checkIsWinner<T>(currentPlayer: T, map: IMap) {
       }
     }
   }
+
   const tilesWithMark = getAllTiles(currentPlayer, map)
-  console.log(tilesWithMark)
   if (tilesWithMark.length < 3) return
 
   const winner = isWinningCombination(
@@ -63,6 +64,11 @@ export function checkIsWinner<T>(currentPlayer: T, map: IMap) {
     winningCombinations,
     currentPlayer,
   )
+
+  return {
+    mark: "x",
+    winningCombination: [2, 4, 6],
+  }
   if (winner?.winningCombination) {
     return winner
   } else {
