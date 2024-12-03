@@ -164,6 +164,7 @@
 
   &__input {
     appearance: none;
+    /* top: 200px; */
   }
   &__label {
     position: absolute;

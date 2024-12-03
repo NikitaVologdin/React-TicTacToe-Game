@@ -66,9 +66,9 @@ export default function PickMark() {
       dispatch(setGameMode("player"))
     }
     dispatch(setStartGame(true))
-    document.startViewTransition(() => {
-      navigate("/game")
-    })
+    // document.startViewTransition(() => {
+    // })
+    navigate("/game")
   }
 
   return (
@@ -78,20 +78,23 @@ export default function PickMark() {
           <legend className="pick__legend">PICK PLAYER 1’S MARK</legend>
           <div className="pick-radio">
             <div className="pick-radio__control radio-control">
-              <input
-                type="radio"
-                id="x"
-                className="radio-control__input"
-                checked={firstPlayersMark === "x" ? true : false}
-                onChange={changeHandler}
-              />
               <motion.label
                 htmlFor="x"
                 className="radio-control__label"
                 onClick={clickHandler}
                 onHoverStart={hoverStartHandler}
                 onHoverEnd={hoverEndHandler}
+                id="byx"
+                aria-label="Select X mark"
               >
+                <input
+                  type="radio"
+                  id="x"
+                  className="radio-control__input"
+                  checked={firstPlayersMark === "x" ? true : false}
+                  onChange={changeHandler}
+                  aria-labelledby="byx"
+                />
                 {isXselected ? (
                   <XOutlineIcon
                     className={"pick__icon"}
@@ -109,20 +112,23 @@ export default function PickMark() {
               </motion.label>
             </div>
             <div className="radio-control">
-              <input
-                type="radio"
-                id="o"
-                className="radio-control__input"
-                checked={firstPlayersMark === "o" ? true : false}
-                onChange={changeHandler}
-              />
               <motion.label
                 htmlFor="o"
                 className="radio-control__label"
                 onClick={clickHandler}
                 onHoverStart={hoverStartHandler}
                 onHoverEnd={hoverEndHandler}
+                id="byo"
+                aria-label="Select O mark"
               >
+                <input
+                  type="radio"
+                  id="o"
+                  className="radio-control__input"
+                  checked={firstPlayersMark === "o" ? true : false}
+                  onChange={changeHandler}
+                  aria-labelledby="byo"
+                />
                 {isOselected ? (
                   <OOutlineIcon
                     className={"pick__icon"}

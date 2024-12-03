@@ -290,6 +290,7 @@ export default function Game() {
   function restartGame() {
     setTakenMoves(0)
     dispatch(setStartGame(true))
+    dispatch(setCurrentPlayer("x"))
     dispatch(
       setRoundResult({
         winnerMark: undefined,

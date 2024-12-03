@@ -35,9 +35,9 @@ export default function GameResultMessage({
     dispatch(setIsModalOpen(false))
 
     restartGame()
-    document.startViewTransition(() => {
-      navigate("/")
-    })
+    // document.startViewTransition(() => {
+    // })
+    navigate("/")
   }
 
   return (
