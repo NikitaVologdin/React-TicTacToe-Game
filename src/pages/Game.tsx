@@ -13,6 +13,7 @@ import {
   setMap,
   setRoundResult,
   roundResultSelector,
+  setGameMode,
 } from "../app/features/configSlice"
 import { useAppDispatch, useAppSelector } from "../app/hooks"
 import Dialog from "../components/Dialog"
@@ -34,6 +35,12 @@ import Pitch from "../components/Pitch"
 import Score from "../components/Score"
 import checkIsWinner from "../utils/checkIsWinner"
 import createNewMap from "../utils/createNewMap"
+import {
+  checkLocalStorage,
+  deleteFromLocalStorage,
+  IPreviousGame,
+  saveToLocalStorage,
+} from "../utils/localStorage"
 
 export default function Game() {
   const [takenMoves, setTakenMoves] = useState(0)
@@ -65,6 +72,7 @@ export default function Game() {
     function () {
       const nextPlayer = currentPlayer === "x" ? "o" : "x"
       dispatch(setCurrentPlayer(nextPlayer))
+      return nextPlayer
     },
     [currentPlayer, dispatch],
   )
@@ -90,9 +98,15 @@ export default function Game() {
       }
 
       dispatch(setMap(newMap))
-
       setTakenMoves(prevAmount => prevAmount + 1)
-      nextPlayer()
+      const nextPlayerMark = nextPlayer()
+      saveToLocalStorage({
+        map: newMap,
+        takenMoves,
+        currentPlayer: nextPlayerMark,
+        gameMode,
+        playersMoves,
+      })
     },
     [currentPlayer, dispatch, map, nextPlayer],
   )
@@ -128,6 +142,26 @@ export default function Game() {
     [map.length, takenMoves],
   )
 
+  function restartGame() {
+    setTakenMoves(0)
+    dispatch(setStartGame(true))
+    dispatch(setCurrentPlayer("x"))
+    dispatch(
+      setRoundResult({
+        winnerMark: undefined,
+        isTie: false,
+        winningCombination: [],
+      }),
+    )
+    playersMoves.x = []
+    playersMoves.o = []
+  }
+
+  function showRestartMessageHandler() {
+    dispatch(setIsModalOpen(true))
+    dispatch(setIsRestartMessageShown(true))
+  }
+
   useEffect(() => {
     function createMap(tiles: string[]) {
       const map = tiles.map((location, index) => {
@@ -151,11 +185,35 @@ export default function Game() {
       "bottom-center",
       "bottom-right",
     ]
-
-    if (startNewGame) {
+    function restorePreviousGame(previousGame: IPreviousGame) {
+      dispatch(setMap(previousGame.map))
+      setCurrentPlayer(previousGame.currentPlayer)
+      dispatch(setGameMode(previousGame.gameMode))
+      setTakenMoves(+previousGame.takenMoves)
+      dispatch(setStartGame(false))
+      playersMoves.o = previousGame.playersMoves.o
+      playersMoves.x = previousGame.playersMoves.x
+      if (
+        previousGame.currentPlayer === secondPlayersMark &&
+        gameMode === "cpu"
+      ) {
+        CPUDecision(previousGame.map)
+      }
+    }
+    function launchNewGame() {
       const newMap = createMap(tiles)
       dispatch(setMap(newMap))
       dispatch(setStartGame(false))
+    }
+
+    const previousGame = checkLocalStorage()
+    if (previousGame && startNewGame) {
+      restorePreviousGame(previousGame)
+      return
+    }
+
+    if (startNewGame) {
+      launchNewGame()
     }
   }, [startNewGame, dispatch])
 
@@ -186,6 +244,7 @@ export default function Game() {
     if (roundResult.winnerMark || roundResult.isTie) {
       dispatch(setIsModalOpen(true))
       dispatch(setIsEndRoundMessageShown(true))
+      deleteFromLocalStorage()
     }
     if (roundResult.winnerMark === "x") {
       firstPlayerWon.current += 1
@@ -218,26 +277,6 @@ export default function Game() {
     roundResult,
     checkAvailableMoves,
   ])
-
-  function restartGame() {
-    setTakenMoves(0)
-    dispatch(setStartGame(true))
-    dispatch(setCurrentPlayer("x"))
-    dispatch(
-      setRoundResult({
-        winnerMark: undefined,
-        isTie: false,
-        winningCombination: [],
-      }),
-    )
-    playersMoves.x = []
-    playersMoves.o = []
-  }
-
-  function showRestartMessageHandler() {
-    dispatch(setIsModalOpen(true))
-    dispatch(setIsRestartMessageShown(true))
-  }
 
   return (
     <>

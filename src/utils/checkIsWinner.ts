@@ -1,6 +1,6 @@
 import { TMark } from "../Types/configTypes"
 
-interface IPlayersMoves {
+export interface IPlayersMoves {
   x: number[]
   o: number[]
 }
