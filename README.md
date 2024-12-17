@@ -14,6 +14,8 @@ This is a solution to the [Tic Tac Toe challenge on Frontend Mentor](https://www
 
 ## Overview
 
+Lighthouse 100% Accessible animated React game. The application saves unfinished game progress to the local store. It has two modes player vs player and player vs CPU
+
 ### The challenge
 
 Users should be able to:
@@ -21,8 +23,6 @@ Users should be able to:
 - View the optimal layout for the game depending on their device's screen size
 - See hover states for all interactive elements on the page
 - Play the game either solo vs the computer or multiplayer against another person
-- **Bonus 1**: Save the game state in the browser so that it’s preserved if the player refreshes their browser
-- **Bonus 2**: Instead of having the computer randomly make their moves, try making it clever so it’s proactive in blocking your moves and trying to win
 
 ### Screenshot
 
@@ -33,8 +33,6 @@ Users should be able to:
 
 - Solution URL: [https://github.com/NikitaVologdin/React-TicTacToe-Game](https://github.com/NikitaVologdin/React-TicTacToe-Game)
 - Live Site URL: [https://react-tic-tac-toe-game-blond.vercel.app/](https://react-tic-tac-toe-game-blond.vercel.app/)
-
-## My process
 
 ### Built with
 
